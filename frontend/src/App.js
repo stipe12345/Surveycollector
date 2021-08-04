@@ -7,6 +7,8 @@ import SignUp from './components/auth/Register2';
 import SignIn from './components/auth/Login2';
 import UserContext from './context/userContext';
 import NewSurvey from './components/layout/NewSurvey'
+import Survey from './components/layout/Survey'
+import FinishSurvey from './components/layout/FinishSurvey'
 import './App.css';
 
 function App() {
@@ -46,6 +48,8 @@ function App() {
           <Route path="/register" component={SignUp} />
           <Route path="/login" component={SignIn} />
           <Route path="/newsurvey" component={NewSurvey}/>
+          <Route path="/survey/:id" component={Survey}/>
+          <Route path="/finishsurvey" component={FinishSurvey}/>
         </Switch>
         </UserContext.Provider>
     </BrowserRouter>

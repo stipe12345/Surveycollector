@@ -66,8 +66,8 @@ export default function SignUp() {
 
         try{
             const newUser = {email, password, passwordCheck, firstName,lastName};
-            await axios.post("http://localhost:5000/users/register", newUser);
-            const loginResponse = await axios.post("http://localhost:5000/users/login", {
+            await axios.post("/users/register", newUser);
+            const loginResponse = await axios.post("/users/login", {
                 email, password
             });
             setUserData({
@@ -175,7 +175,7 @@ export default function SignUp() {
           </Button>
           <Grid container justify="flex-end">
             <Grid item>
-              <Link href="http://localhost:3000/login" variant="body2">
+              <Link href="/login" variant="body2">
                 Already have an account? Sign in
               </Link>
             </Grid>

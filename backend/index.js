@@ -32,3 +32,4 @@ mongoose.connect(
 
 app.use("/users", require("./routes/users"));
 app.use("/todos", require("./routes/todo"));
+app.use("/forms",require("./routes/forms"));
