@@ -9,6 +9,7 @@ import UserContext from './context/userContext';
 import NewSurvey from './components/layout/NewSurvey'
 import Survey from './components/layout/Survey'
 import FinishSurvey from './components/layout/FinishSurvey'
+import Completed from './components/layout/Completed'
 import './App.css';
 
 function App() {
@@ -50,6 +51,7 @@ function App() {
           <Route path="/newsurvey" component={NewSurvey}/>
           <Route path="/survey/:id" component={Survey}/>
           <Route path="/finishsurvey" component={FinishSurvey}/>
+          <Route path="/completed" component={Completed}/>
         </Switch>
         </UserContext.Provider>
     </BrowserRouter>

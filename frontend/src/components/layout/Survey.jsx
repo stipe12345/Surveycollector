@@ -1,5 +1,5 @@
 import axios from 'axios';
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect,useRef } from 'react';
 import { useParams } from "react-router-dom";
 import Button from "@material-ui/core/Button";
 import AnswerBoxes from "../questions/Answerboxes";
@@ -20,42 +20,89 @@ import Radio from '@material-ui/core/Radio';
 import RadioGroup from '@material-ui/core/RadioGroup';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
 import FormLabel from '@material-ui/core/FormLabel';
+import { useHistory, Link } from "react-router-dom";
+
 const useStyles = makeStyles((theme) => ({
-    box:{
-      margin:theme.spacing(1),
-    },
     button:{
-        alignSelf:"center",
-        alignItems:"center",
-        textAlign:"center",
-      margin:theme.spacing(1),
+      
+      margin:theme.spacing(2),
     },
   
-   
   }));
 const Survey = () => {
+    const classes = useStyles();
     const [error, setError] = useState();
     const [survey,setSurvey]=useState();
+    const [finishedsurvey,setFinishedSurvey]=useState();
     const [value,setValue]=useState();
     const { id } = useParams();
+    const history = useHistory();
+    const initialRender = useRef(true);
     const Fetch=async ()=>{
         try{
             
             const FetchForm=await axios.post("/forms/getform",{FormID:id});
             console.log(FetchForm.data);
             setSurvey(FetchForm.data);
+            
         }catch(err)
         {
             err.response.data.msg && setError(err.response.data.msg)
         }
     }
+    const PrepareArray= (data)=>{
+    var erasedAns=data;
+        erasedAns.Questions.map((el)=>{
+            el.Answers=[]
+        })
+        setFinishedSurvey(erasedAns);
+    }
+    useEffect(()=>{
+        console.log("survey before if")
+        if(initialRender.current)
+        {console.log("true")
+        initialRender.current=false;
+        }
+        else
+        {console.log("false");
+        var clone=JSON.parse(JSON.stringify(survey))
+        console.log(clone)
+        PrepareArray(clone);
+    }          
+    },[survey])
     useEffect(() => {
         Fetch();
     }, []);
+    useEffect(()=>{
+        console.log("finished")
+        console.log(finishedsurvey);
+    },[finishedsurvey]);
     const handleSubmit=async(e)=>{
         e.preventDefault();
+        try{
+            
+            const SubmitForm=await axios.post("/forms/submitform",{Survey:finishedsurvey});
+            history.push("/completed");
+            
+        }catch(err)
+        {
+            err.response.data.msg && setError(err.response.data.msg)
+        }
     }
-    return survey?(<>
+    const handleChange= (e)=>{
+        console.log("finished survey")
+        console.log(finishedsurvey);
+        console.log(e.target.name);
+        console.log(e.target.value);
+        var finished=finishedsurvey;
+        console.log(finished);
+        console.log(finished.Questions[e.target.name]);
+        finished.Questions[e.target.name].Answers=[e.target.value]
+        setFinishedSurvey(finished);
+
+    }
+    return survey?(
+    <>
     <form style={{height:"100%"}} onSubmit={handleSubmit}>
 <Typography style={{textAlign:"center"}}variant="header" component="h2">
     {survey.Title}
@@ -71,7 +118,7 @@ const Survey = () => {
             </Typography>
             {question.QuestionType=="radio"?(
             <FormControl component="fieldset">
-    <RadioGroup aria-label="answers" name={"answers"+(index+1)} value={value} onChange={(e)=>{setValue(e.target.value)}}>
+    <RadioGroup aria-label="answers" name={index}  value={value} onChange={handleChange}>
         {question.Answers.map((answer)=>{
             return <FormControlLabel value={answer} control={<Radio />} label={answer} />
         })}
@@ -80,7 +127,7 @@ const Survey = () => {
         </div>
     )
 })}
-<Button  type="submit" textAlign="center" variant="contained" color="primary">
+<Button className={classes.button} type="submit"  variant="contained" color="primary">
            Submit Survey 
           </Button>
     </form>

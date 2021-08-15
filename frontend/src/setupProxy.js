@@ -15,6 +15,27 @@ module.exports = function (app) {
     })
   );
   app.use(
+    ["/forms/submitform"],
+    createProxyMiddleware({
+      target: "http://localhost:5000",
+      changeOrigin: true,
+    })
+  );
+  app.use(
+    ["/forms/fetchtitles"],
+    createProxyMiddleware({
+      target: "http://localhost:5000",
+      changeOrigin: true,
+    })
+  );
+  app.use(
+    ["/forms/fetchsurvey"],
+    createProxyMiddleware({
+      target: "http://localhost:5000",
+      changeOrigin: true,
+    })
+  );
+  app.use(
     ["/allposts"],
     createProxyMiddleware({
       target: "http://localhost:5000",
