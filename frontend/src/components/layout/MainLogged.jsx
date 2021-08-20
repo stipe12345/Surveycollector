@@ -1,25 +1,18 @@
 import React, { useState, useEffect, useContext } from "react";
 import UserContext from "../../context/userContext";
 import Card from "@material-ui/core/Card";
-import CardActionArea from "@material-ui/core/CardActionArea";
 import CardActions from "@material-ui/core/CardActions";
 import CardContent from "@material-ui/core/CardContent";
 import List from "@material-ui/core/List";
 import ListItem from "@material-ui/core/ListItem";
 import { ListItemText } from "@material-ui/core";
-import Divider from "@material-ui/core/Divider";
-import CardMedia from "@material-ui/core/CardMedia";
 import Button from "@material-ui/core/Button";
 import Typography from "@material-ui/core/Typography";
-import Grid from "@material-ui/core/Grid";
 import { makeStyles } from "@material-ui/core/styles";
-import Select from "@material-ui/core/Select";
-import MenuItem from "@material-ui/core/MenuItem";
 import FormControl from "@material-ui/core/FormControl";
 import InputLabel from "@material-ui/core/InputLabel";
 import { NativeSelect } from "@material-ui/core";
 import { FormHelperText } from "@material-ui/core";
-import EnhancedTable from "./Table";
 import { useHistory } from "react-router-dom";
 import axios from "axios";
 const useStyles = makeStyles({
@@ -58,24 +51,24 @@ const useStyles = makeStyles({
   pos: {
     marginBottom: 12,
   },
-  textbox:{
-    whiteSpace:"pre-wrap"
+  textbox: {
+    whiteSpace: "pre-wrap",
   },
 });
-const LoggedHome = (props) => {
+const LoggedHome = () => {
   const classes = useStyles();
   const history = useHistory();
   const [surveytitles, setSurveyTitles] = useState();
   const { userData } = useContext(UserContext);
   const [Answers, SetAnswers] = useState();
-  const fetchTitles = async () => {
-    const Titles = await axios.post("/forms/fetchtitles", {
-      UserID: userData.user,
-    });
-    console.log(Titles.data);
-    setSurveyTitles(Titles.data);
-  };
+
   useEffect(() => {
+    const fetchTitles = async () => {
+      const Titles = await axios.post("/forms/fetchtitles", {
+        UserID: userData.user,
+      });
+      setSurveyTitles(Titles.data);
+    };
     fetchTitles();
   }, []);
   useEffect(() => {}, [surveytitles]);
@@ -85,30 +78,43 @@ const LoggedHome = (props) => {
   const countanswers = (index, noofcounts) => {
     let array;
     array = Answers.Survey[index].ChosenAnswers;
-
-    //console.log(array);
     array.sort();
-    //console.log(array);
     let counter = [];
     for (let i = 0; i < noofcounts; i++) {
       let temp = array.filter((item) =>
         item.includes(Answers.Questions[index].Answers[i])
       );
-      //console.log(temp);
       var obj = {};
-      obj[temp[0]] = temp.length;
-      counter.push(obj);
+      if (temp.length === 0) {
+        obj[Answers.Questions[index].Answers[i]] = 0;
+        counter.push(obj);
+      } else {
+        obj[temp[0]] = temp.length;
+        counter.push(obj);
+      }
     }
-    //console.log(counter);
     return counter;
   };
+  const displayanswers = (counters, index) => {
+    let buffer = "";
+    counters.map((key) => {
+      buffer +=
+        Object.entries(key)[0][0] +
+        ":" +
+        (
+          (Object.entries(key)[0][1] /
+            Answers.Survey[index].ChosenAnswers.length) *
+          100
+        ).toFixed(2) +
+        "%\n";
+      return 0;
+    });
+    return buffer;
+  };
   const handlechange = async (e) => {
-    //console.log(e.target.selectedOptions[0].text);
-    //console.log(e.target.value)
     const Survey = await axios.post("/forms/fetchsurvey", {
       FormID: e.target.value,
     });
-    console.log(Survey);
     SetAnswers(Survey.data);
   };
   return (
@@ -135,7 +141,7 @@ const LoggedHome = (props) => {
             <NativeSelect onChange={handlechange}>
               <option aria-label="None" value="" />
               {surveytitles ? (
-                surveytitles.map((title, index) => {
+                surveytitles.map((title) => {
                   return <option value={title._id}>{title.FormTitle}</option>;
                 })
               ) : (
@@ -150,39 +156,33 @@ const LoggedHome = (props) => {
         Answers.Survey ? (
           <List component="nav" className={classes.list} aria-label="questions">
             {Answers.Questions.map((Question, index) => {
-              if (Answers.Survey.length == 0)
+              if (Answers.Survey.length === 0)
                 return (
                   <ListItem button divider>
-                    <ListItemText className={classes.textbox}
-                      primary={Question.QuestionText + "\n No answers yet"}
+                    <ListItemText
+                      className={classes.textbox}
+                      primary={Question.QuestionText}
+                      secondary={"No answers yet"}
                     />
                   </ListItem>
                 );
               let counters = countanswers(index, Question.NumberofAnswers);
               return (
                 <ListItem button divider>
-                  <ListItemText className={classes.textbox}
+                  <ListItemText
+                    className={classes.textbox}
+                    secondaryTypographyProps={{ color: "black" }}
                     primary={
-                      Question.QuestionText +
-                      "\n " +
-                      counters.map((key) => {
-                        return (
-                          Object.entries(key)[0][0] +
-                          ":" +
-                          (
-                            (Object.entries(key)[0][1] /
-                              Answers.Survey[index].ChosenAnswers.length) *
-                            100
-                          ).toFixed(2) +
-                          "%\n"
-                        );
-                      })
+                      <Typography variant="h6">
+                        {" "}
+                        {Question.QuestionText}
+                      </Typography>
                     }
+                    secondary={displayanswers(counters, index)}
                   />
                 </ListItem>
               );
             })}
-            
           </List>
         ) : (
           <Typography>No answers yet.</Typography>

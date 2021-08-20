@@ -36,27 +36,6 @@ module.exports = function (app) {
     })
   );
   app.use(
-    ["/allposts"],
-    createProxyMiddleware({
-      target: "http://localhost:5000",
-      changeOrigin: true,
-    })
-  );
-  app.use(
-    ["/allcomments"],
-    createProxyMiddleware({
-      target: "http://localhost:5000",
-      changeOrigin: true,
-    })
-  );
-  app.use(
-    ["/addcomment"],
-    createProxyMiddleware({
-      target: "http://localhost:5000",
-      changeOrigin: true,
-    })
-  );
-  app.use(
     ["/users/tokenIsValid"],
     createProxyMiddleware({
       target: "http://localhost:5000",

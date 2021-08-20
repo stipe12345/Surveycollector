@@ -6,10 +6,9 @@ const User = require("../models/user.model");
 
 router.post("/register", async (req, res) => {
   try {
-    let { email, password, passwordCheck, firstName,lastName } = req.body;
+    let { email, password, passwordCheck, firstName, lastName } = req.body;
 
     // validate
-console.log(req.body);
     if (!email || !password || !passwordCheck || !firstName || !lastName)
       return res.status(400).json({ msg: "Not all fields have been entered." });
     if (password.length < 5)
@@ -27,20 +26,17 @@ console.log(req.body);
         .status(400)
         .json({ msg: "An account with this email already exists." });
 
-    
     const salt = await bcrypt.genSalt();
     const passwordHash = await bcrypt.hash(password, salt);
 
     const newUser = new User({
       email,
       password: passwordHash,
-      firstname:firstName,
-      lastname:lastName
+      firstname: firstName,
+      lastname: lastName,
     });
-    console.log(newUser);
     const savedUser = await newUser.save();
     res.json(savedUser);
-    console.log(savedUser);
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
@@ -64,7 +60,6 @@ router.post("/login", async (req, res) => {
     if (!isMatch) return res.status(400).json({ msg: "Invalid credentials." });
 
     const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET);
-    console.log("token",token);
     res.json({
       token,
       user: {
@@ -76,7 +71,6 @@ router.post("/login", async (req, res) => {
     res.status(500).json({ error: err.message });
   }
 });
-
 
 router.delete("/delete", auth, async (req, res) => {
   try {

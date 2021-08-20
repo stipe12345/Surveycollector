@@ -1,31 +1,35 @@
-import React, {useState, useEffect } from 'react';
-import { BrowserRouter, Switch, Route } from 'react-router-dom';
-import axios from 'axios';
-import Header from './components/layout/Header.jsx'
-import Home from './components/pages/Home';
-import SignUp from './components/auth/Register2';
-import SignIn from './components/auth/Login2';
-import UserContext from './context/userContext';
-import NewSurvey from './components/layout/NewSurvey'
-import Survey from './components/layout/Survey'
-import FinishSurvey from './components/layout/FinishSurvey'
-import Completed from './components/layout/Completed'
-import './App.css';
+import React, { useState, useEffect } from "react";
+import { BrowserRouter, Switch, Route } from "react-router-dom";
+import axios from "axios";
+import Header from "./components/layout/Header.jsx";
+import Home from "./components/pages/Home";
+import SignUp from "./components/auth/Register2";
+import SignIn from "./components/auth/Login2";
+import UserContext from "./context/userContext";
+import NewSurvey from "./components/layout/NewSurvey";
+import Survey from "./components/layout/Survey";
+import FinishSurvey from "./components/layout/FinishSurvey";
+import Completed from "./components/layout/Completed";
+import "./App.css";
 
 function App() {
-  const [ userData, setUserData] = useState({
+  const [userData, setUserData] = useState({
     token: undefined,
-    user: undefined
+    user: undefined,
   });
 
   useEffect(() => {
     const checkLoggedIn = async () => {
       let token = localStorage.getItem("auth-token");
-      if(token === null){
+      if (token === null) {
         localStorage.setItem("auth-token", "");
         token = "";
       }
-      const tokenResponse = await axios.post('http://localhost:5000/users/tokenIsValid', null, {headers: {"x-auth-token": token}});
+      const tokenResponse = await axios.post(
+        "http://localhost:5000/users/tokenIsValid",
+        null,
+        { headers: { "x-auth-token": token } }
+      );
       if (tokenResponse.data) {
         const userRes = await axios.get("http://localhost:5000/users/", {
           headers: { "x-auth-token": token },
@@ -35,7 +39,7 @@ function App() {
           user: userRes.data,
         });
       }
-    }
+    };
 
     checkLoggedIn();
   }, []);
@@ -48,12 +52,12 @@ function App() {
           <Route exact path="/" component={Home} />
           <Route path="/register" component={SignUp} />
           <Route path="/login" component={SignIn} />
-          <Route path="/newsurvey" component={NewSurvey}/>
-          <Route path="/survey/:id" component={Survey}/>
-          <Route path="/finishsurvey" component={FinishSurvey}/>
-          <Route path="/completed" component={Completed}/>
+          <Route path="/newsurvey" component={NewSurvey} />
+          <Route path="/survey/:id" component={Survey} />
+          <Route path="/finishsurvey" component={FinishSurvey} />
+          <Route path="/completed" component={Completed} />
         </Switch>
-        </UserContext.Provider>
+      </UserContext.Provider>
     </BrowserRouter>
   );
 }

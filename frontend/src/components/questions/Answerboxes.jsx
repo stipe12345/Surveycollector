@@ -1,31 +1,20 @@
 import React, { useState, useEffect } from "react";
-import Avatar from "@material-ui/core/Avatar";
 import Button from "@material-ui/core/Button";
-import CssBaseline from "@material-ui/core/CssBaseline";
 import TextField from "@material-ui/core/TextField";
-import FormControlLabel from "@material-ui/core/FormControlLabel";
-import Checkbox from "@material-ui/core/Checkbox";
-import Link from "@material-ui/core/Link";
-import Grid from "@material-ui/core/Grid";
-import Box from "@material-ui/core/Box";
-import LockOutlinedIcon from "@material-ui/icons/LockOutlined";
-import Typography from "@material-ui/core/Typography";
-import { makeStyles } from "@material-ui/core/styles";
-import Container from "@material-ui/core/Container";
 const Radio = (props) => {
   const [Noofans, setNoofans] = useState(props.number);
   const [Anslist, setAnslist] = useState();
   const [ans, setans] = useState();
-  const [completedata,setCompletedata]=useState([]);
-  const [disabled,setDisabled]=useState(false);
-  useEffect(()=>{
+  const [completedata, setCompletedata] = useState([]);
+  const [disabled, setDisabled] = useState(false);
+  useEffect(() => {
     getanswerboxes();
-  },[disabled])
-  useEffect(()=>{
+  }, [disabled]);
+  useEffect(() => {
     props.setAnswers(completedata);
-  },[completedata])
+  }, [completedata]);
   const getanswerboxes = () => {
-    if (ans == undefined) initanswers();
+    if (ans === undefined) initanswers();
     else {
       let i = 0;
       let answerbox = [];
@@ -61,26 +50,25 @@ const Radio = (props) => {
   const setAnswers = (id, value) => {
     let answerslist = ans;
     for (let i = 0; i < Noofans; i++) {
-      if (id == "answer" + (i + 1)) {
+      if (id === "answer" + (i + 1)) {
         answerslist[i] = value;
       }
     }
     setans(answerslist);
-    console.log(ans);
   };
-  const handleinput= ()=>{
-    setCompletedata({questiontext:props.questiontext,answers:ans})
-    
-     setDisabled(true);
-  }
+  const handleinput = () => {
+    setCompletedata({ questiontext: props.questiontext, answers: ans });
+
+    setDisabled(true);
+  };
   return (
-    <> 
+    <>
       {Anslist
         ? Anslist.map((answerlist) => {
-            return<div>{answerlist}</div>
+            return <div>{answerlist}</div>;
           })
         : getanswerboxes()}
-         <Button  onClick={handleinput}>Confirm answers</Button>
+      <Button onClick={handleinput}>Confirm answers</Button>
     </>
   );
 };
