@@ -166,7 +166,6 @@ const LoggedHome = (props) => {
                       Question.QuestionText +
                       "\n " +
                       counters.map((key) => {
-                        console.log(Object.entries(key)[0][1])
                         return (
                           Object.entries(key)[0][0] +
                           ":" +
